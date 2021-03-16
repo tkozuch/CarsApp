@@ -8,5 +8,7 @@ class Car(models.Model):
 
 
 class Rate(models.Model):
-    car_id = models.ForeignKey(Car, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+
+    objects = models.Manager()
