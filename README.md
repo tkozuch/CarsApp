@@ -54,6 +54,18 @@ Open terminal in project folder and run:
 pip install -r requirements.txt
 ```
 
+### Set environment variables:
+(example values can be found in .env.sample file)
+
+If working from Windows command prompt, then run:
+`SET SECRET_KEY=<your secret key>`
+
+Bash based command prompts:
+`EXPORT SECRET_KEY=<your secret key>`
+
+Secret key is any string of your choice. It will be used for security matters, so it's better to
+ choose secure one and keep it private.
+
 ### Apply migrations:
 
 Go to site folder:
@@ -64,14 +76,7 @@ Run:
 
 ### Run application:
 
-Windows command line:
-`set SECRET_KEY=<your_secret_key> && python manage.py runserver`
-
-Linux-based systems:
-`export SECRET_KEY=<your_secret_key> && python manage.py runserver`
-
-Secret key is any string of your choice. It will be used for security matters, so it's better to
- choose secure one and keep it private.
+`python manage.py runserver`
 
 ### Check if works:
 
