@@ -17,6 +17,7 @@ go to project folder:
 
 `docker-compose up`
 
+(CTR+C to stop and exit)
 
 ### Check if works:
 
@@ -28,6 +29,8 @@ This should return empty brackets in your top left corner directory: `[]`
 
 
 ### To run tests:
+
+(From another terminal when the project is running) Run:
 
 `docker-compose exec web python manage.py test`
 
