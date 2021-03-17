@@ -1,1 +1,1 @@
-web: gunicorn cars_site.wsgi
+web: cd ./cars_site && gunicorn cars_site.wsgi
