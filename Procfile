@@ -1,1 +1,1 @@
-web: cd ./cars_site && gunicorn cars_site.wsgi
+web: cd ./cars_site && python manage.py migrate && gunicorn cars_site.wsgi
