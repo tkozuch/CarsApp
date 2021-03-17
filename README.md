@@ -9,7 +9,28 @@ go to project folder:
 
 `cd ./NetGuruCars`
 
-## Getting started locally:
+## a) Getting started with Docker:
+
+`docker-compose build`
+
+`docker-compose up`
+
+
+### Check if works:
+
+In browser type:
+
+http://127.0.0.1:8000/cars
+
+This should return empty brackets in your top left corner directory: `[]`
+
+
+### To run tests:
+
+`docker-compose exec web python manage.py test`
+
+
+## b) Getting started locally:
 
 ### (Optional) Make and activate virtual environment:
 
@@ -47,3 +68,10 @@ In browser type:
 http://127.0.0.1:8000/cars
 
 This should return empty brackets in your top left corner directory: `[]`
+
+
+### To run tests:
+
+From `NetGuruCars/cars_site` directory run: 
+
+<br> `python manage.py test`
