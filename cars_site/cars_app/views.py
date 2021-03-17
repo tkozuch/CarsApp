@@ -16,7 +16,6 @@ class CarsView(View):
             avg_rating=Avg("rate__rating")
         ).values("id", "make", "model", "avg_rating")
 
-        # TODO: Check if JSON Response does have appropriate Content-type header by default
         return JsonResponse(list(cars_with_avg_rating), safe=False)
 
     def post(self, request):
@@ -38,7 +37,7 @@ class CarsView(View):
             params={"format": "json"},
         ).json()[
             "Results"
-        ]  # Even with invalid make, the empty result and response 200 is returned
+        ]  # If the make does not exist we will get empty list.
 
         car_exists = any([result["Model_Name"] == model for result in all_make_models])
         return car_exists
@@ -72,7 +71,6 @@ class RateView(View):
             return HttpResponse(status=201)
 
 
-# TODO: How many "TOP" popular cars should be outputed?
 class Popular(View):
     def get(self, request):
         cars_with_rates_number = Car.objects.annotate(rates_number=Count("rate")).values(
@@ -81,7 +79,5 @@ class Popular(View):
 
         return JsonResponse(
             sorted(cars_with_rates_number, key=lambda car: car["rates_number"], reverse=True),
-            # From ECMA script 5 it shall be again safe to serialize and output
-            # List objects this way.
             safe=False,
         )

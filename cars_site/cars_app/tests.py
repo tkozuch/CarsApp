@@ -92,53 +92,46 @@ class TestCarsViewGet(TestCase):
                 Rate(car=cars[0], rating=2),
                 Rate(car=cars[0], rating=4),
                 Rate(car=cars[0], rating=3),
-
                 Rate(car=cars[1], rating=1),
                 Rate(car=cars[1], rating=1),
-
                 Rate(car=cars[2], rating=5),
             ]
         )
 
         response = self.client.get(
-            '/cars/',
-            headers={"Content-Type": "application/json;charset=UTF-8"}
+            "/cars/", headers={"Content-Type": "application/json;charset=UTF-8"}
         )
 
         self.assertEqual(
-           [
-               {
-                   "id": cars[0].id,
-                   "make": "Volvo",
-                   "model": "volvo-model-1",
-                   "avg_rating": 3
-               },
-               {
-                   "id": cars[1].id,
-                   "make": "Volvo",
-                   "model": "volvo-model-2",
-                   "avg_rating": 1
-               },
-               {
-                   "id": cars[2].id,
-                   "make": "Volvo",
-                   "model": "volvo-model-3",
-                   "avg_rating": 5
-               },
-           ],
-           response.json()
+            [
+                {
+                    "id": cars[0].id,
+                    "make": "Volvo",
+                    "model": "volvo-model-1",
+                    "avg_rating": 3,
+                },
+                {
+                    "id": cars[1].id,
+                    "make": "Volvo",
+                    "model": "volvo-model-2",
+                    "avg_rating": 1,
+                },
+                {
+                    "id": cars[2].id,
+                    "make": "Volvo",
+                    "model": "volvo-model-3",
+                    "avg_rating": 5,
+                },
+            ],
+            response.json(),
         )
 
     def test_returns_empty_list_if_no_cars_created(self):
         response = self.client.get(
-            '/cars/',
-            headers={"Content-Type": "application/json;charset=UTF-8"}
+            "/cars/", headers={"Content-Type": "application/json;charset=UTF-8"}
         )
 
-        self.assertEqual(
-            [],
-            response.json()
-        )
+        self.assertEqual([], response.json())
 
 
 class TestCarsDeleteView(TestCase):
@@ -385,8 +378,52 @@ class TestPopularView(TestCase):
         )
 
     @staticmethod
-    def _rate_cars(number_of_rates: Dict[Car, int]):
+    def _rate_cars(number_of_rates: Dict[int, int]):
         for car_id, rates_count in number_of_rates.items():
             # Create this number of rates for the given Car.
             for _ in range(rates_count):
                 Rate.objects.create(car_id=car_id, rating=5)
+
+
+class TestCarsPostGetDeleteIntegration(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+    def test_all_operations_integrate_well_with_one_another(self):
+        get_response_1 = self.client.get("/cars/")
+
+        self.assertEqual(200, get_response_1.status_code)
+        self.assertEqual([], get_response_1.json())
+
+        post_response_1 = self.client.post(
+            "/cars/",
+            data={
+                "make": "Volkswagen",
+                "model": "Golf",
+            }
+        )
+        post_response_2 = self.client.post(
+            "/cars/",
+            data={
+                "make": "Volkswagen",
+                "model": "Passat",
+            }
+        )
+        self.assertEqual(201, post_response_1.status_code)
+        self.assertEqual(201, post_response_2.status_code)
+
+        get_response_2 = self.client.get("/cars/")
+        self.assertEqual(200, get_response_2.status_code)
+        self.assertEqual(2, len(get_response_2.json()))
+
+        car = get_response_2.json()[0]
+
+        self.client.delete(
+            f"/cars/{car['id']}"
+        )
+
+        get_response_3 = self.client.get("/cars/")
+        self.assertEqual(1, len(get_response_3.json()))
+
+
+# More integrations tests could be done.
