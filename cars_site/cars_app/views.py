@@ -1,11 +1,9 @@
-from statistics import mean
-
 import requests
 from django.core.exceptions import ValidationError
+from django.db.models import Avg, Count
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.views import View
-from django.db.models import Avg
 
 from .models import Car, Rate
 
@@ -14,27 +12,12 @@ class CarsView(View):
     VALIDATING_API = "https://vpic.nhtsa.dot.gov/api/"
 
     def get(self, request):
-        cars = Car.objects.all()
-        cars_list = []
-
-        # TODO: Check if can be changed to more efficient querying:
-        #  https://docs.djangoproject.com/en/3.1/topics/db/aggregation/
-        #  https://books.agiliq.com/projects/django-orm-cookbook/en/latest/select_some_fields.html
-        for car in cars:
-            rates = car.rate_set.all()
-            avg_rate = mean(rate.rating for rate in rates)
-
-            cars_list.append(
-                {
-                    "id": car.id,
-                    "make": car.make,
-                    "model": car.model,
-                    "avg_rating": avg_rate,
-                }
-            )
+        cars_with_avg_rating = Car.objects.annotate(
+            avg_rating=Avg("rate__rating")
+        ).values("id", "make", "model", "avg_rating")
 
         # TODO: Check if JSON Response does have appropriate Content-type header by default
-        return JsonResponse(cars_list, safe=False)
+        return JsonResponse(list(cars_with_avg_rating), safe=False)
 
     def post(self, request):
         make = request.POST["make"]
@@ -92,23 +75,12 @@ class RateView(View):
 # TODO: How many "TOP" popular cars should be outputed?
 class Popular(View):
     def get(self, request):
-        # TODO: Change to more efficient querying:
-        #  https://docs.djangoproject.com/en/3.1/topics/db/aggregation/
-        #  https://books.agiliq.com/projects/django-orm-cookbook/en/latest/select_some_fields.html
-        cars = Car.objects.all()
-
-        output = [
-            {
-                "id": car.id,
-                "make": car.make,
-                "model": car.model,
-                "rates_number": car.rate_set.count(),
-            }
-            for car in cars
-        ]
+        cars_with_rates_number = Car.objects.annotate(rates_number=Count("rate")).values(
+            "id", "make", "model", "rates_number"
+        )
 
         return JsonResponse(
-            sorted(output, key=lambda car: car["rates_number"], reverse=True),
+            sorted(cars_with_rates_number, key=lambda car: car["rates_number"], reverse=True),
             # From ECMA script 5 it shall be again safe to serialize and output
             # List objects this way.
             safe=False,
