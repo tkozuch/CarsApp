@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.views import View
+from django.db.models import Avg
 
 from .models import Car, Rate
 
@@ -13,7 +14,7 @@ class CarsView(View):
     VALIDATING_API = "https://vpic.nhtsa.dot.gov/api/"
 
     def get(self, request):
-        cars = Car.objects.get_all()
+        cars = Car.objects.all()
         cars_list = []
 
         # TODO: Check if can be changed to more efficient querying:
@@ -32,7 +33,8 @@ class CarsView(View):
                 }
             )
 
-        return JsonResponse(cars_list)
+        # TODO: Check if JSON Response does have appropriate Content-type header by default
+        return JsonResponse(cars_list, safe=False)
 
     def post(self, request):
         make = request.POST["make"]

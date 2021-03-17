@@ -1,12 +1,12 @@
-from typing import Dict, List
-from unittest.mock import MagicMock, patch
+from typing import Dict
+from unittest.mock import patch
 
 from django.test import Client, TestCase
 
 from .models import Car, Rate
 
 
-class TestCarsView(TestCase):
+class TestCarsViewPost(TestCase):
     def setUp(self) -> None:
         self.client = Client()
 
@@ -70,6 +70,75 @@ class TestCarsView(TestCase):
             self.assertEqual(car.model, data["model"])
 
             self.assertEqual(response.status_code, 201)
+
+
+class TestCarsViewGet(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+    def test_returns_list_of_cars_if_they_were_created(self):
+        Car.objects.bulk_create(
+            [
+                Car(make="Volvo", model="volvo-model-1"),
+                Car(make="Volvo", model="volvo-model-2"),
+                Car(make="Volvo", model="volvo-model-3"),
+            ]
+        )
+
+        cars = Car.objects.all()
+
+        Rate.objects.bulk_create(
+            [
+                Rate(car=cars[0], rating=2),
+                Rate(car=cars[0], rating=4),
+                Rate(car=cars[0], rating=3),
+
+                Rate(car=cars[1], rating=1),
+                Rate(car=cars[1], rating=1),
+
+                Rate(car=cars[2], rating=5),
+            ]
+        )
+
+        response = self.client.get(
+            '/cars/',
+            headers={"Content-Type": "application/json;charset=UTF-8"}
+        )
+
+        self.assertEqual(
+           [
+               {
+                   "id": cars[0].id,
+                   "make": "Volvo",
+                   "model": "volvo-model-1",
+                   "avg_rating": 3
+               },
+               {
+                   "id": cars[1].id,
+                   "make": "Volvo",
+                   "model": "volvo-model-2",
+                   "avg_rating": 1
+               },
+               {
+                   "id": cars[2].id,
+                   "make": "Volvo",
+                   "model": "volvo-model-3",
+                   "avg_rating": 5
+               },
+           ],
+           response.json()
+        )
+
+    def test_returns_empty_list_if_no_cars_created(self):
+        response = self.client.get(
+            '/cars/',
+            headers={"Content-Type": "application/json;charset=UTF-8"}
+        )
+
+        self.assertEqual(
+            [],
+            response.json()
+        )
 
 
 class TestCarsDeleteView(TestCase):
