@@ -35,7 +35,7 @@ This should return empty brackets in your top left corner directory: `[]`
 `docker-compose exec web python manage.py test`
 
 
-## b) Getting started locally:
+## b) Getting started by hand:
 
 ### (Optional) Make and activate virtual environment:
 
