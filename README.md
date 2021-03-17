@@ -11,6 +11,8 @@ go to project folder:
 
 ## a) Getting started with Docker:
 
+`cp .env.sample .env`
+
 `docker-compose build`
 
 `docker-compose up`
@@ -59,7 +61,14 @@ Run:
 
 ### Run application:
 
-`python manage.py runserver`
+Windows command line:
+`set SECRET_KEY=<your_secret_key> && python manage.py runserver`
+
+Linux-based systems:
+`export SECRET_KEY=<your_secret_key> && python manage.py runserver`
+
+Secret key is any string of your choice. It will be used for security matters, so it's better to
+ choose secure one and keep it private.
 
 ### Check if works:
 
