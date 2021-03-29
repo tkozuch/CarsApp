@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from django.core.exceptions import ValidationError
 from django.db.models import Avg, Count
@@ -6,6 +8,8 @@ from django.shortcuts import HttpResponse
 from django.views import View
 
 from .models import Car, Rate
+
+log = logging.getLogger(__file__)
 
 
 class CarsView(View):
@@ -32,15 +36,33 @@ class CarsView(View):
         return HttpResponse(status=201)
 
     def _check_car_exists(self, make, model):
-        all_make_models = requests.get(
-            f"{self.VALIDATING_API}/vehicles/GetModelsForMake/{make}",
-            params={"format": "json"},
-        ).json()[
-            "Results"
-        ]  # If the make does not exist we will get empty list.
+        try:
+            response = requests.get(
+                f"{self.VALIDATING_API}/vehicles/GetModelsForMake/{make}",
+                params={"format": "json"},
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            log.exception(
+                "External API signaled a problem. Check status code for further "
+                "information. Aborting."
+            )
+        except requests.exceptions.RequestException:
+            log.exception(
+                "An exception occurred while making request to external API: {}. Aborting.".format(
+                    self.VALIDATING_API
+                )
+            )
+        else:
+            all_make_models = response.json()[
+                "Results"
+            ]  # If the make does not exist we will get an empty list.
 
-        car_exists = any([result["Model_Name"] == model for result in all_make_models])
-        return car_exists
+            make_exists = all_make_models != []
+            model_exists = any(
+                [result["Model_Name"] == model for result in all_make_models]
+            )
+            return make_exists and model_exists
 
 
 class CarsDeleteView(View):
@@ -78,6 +100,8 @@ class Popular(View):
         )
 
         return JsonResponse(
-            sorted(cars_with_rates_number, key=lambda car: car["rates_number"], reverse=True),
+            sorted(
+                cars_with_rates_number, key=lambda car: car["rates_number"], reverse=True
+            ),
             safe=False,
         )
