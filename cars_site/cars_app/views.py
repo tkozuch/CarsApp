@@ -31,9 +31,14 @@ class CarsView(View):
             )
 
         else:
-            Car.objects.create(make=make, model=model)
-
-        return HttpResponse(status=201)
+            _, created = Car.objects.get_or_create(make=make, model=model)
+            if created:
+                return HttpResponse(status=201)
+            else:
+                return HttpResponse(
+                    "Car with this parameters already exists.",
+                    status=409,
+                )
 
     def _check_car_exists(self, make, model):
         try:

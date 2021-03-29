@@ -71,6 +71,31 @@ class TestCarsViewPost(TestCase):
 
             self.assertEqual(response.status_code, 201)
 
+    def test_doesnt_create_second_car_if_it_was_already_created(self):
+        data = {
+            "make": "Volkswagen",
+            "model": "Golf",
+        }
+        with patch("cars_app.views.requests.get") as make_models_get:
+            Car.objects.create(make=data["make"], model=data["model"])
+
+            make_models_get.return_value.json.return_value = {
+                "Results": [{"Model_Name": "Golf"}, {"Model_Name": "Passat"}]
+            }
+            cars = Car.objects.all()
+            self.assertEqual(len(cars), 1)
+
+            response = self.client.post(
+                "/cars/",
+                data=data,
+                headers={"Content-Type": "application/json;charset=UTF-8"},
+            )
+
+            cars = Car.objects.all()
+            self.assertEqual(len(cars), 1)
+
+            self.assertEqual(response.status_code, 409)
+
 
 class TestCarsViewGet(TestCase):
     def setUp(self) -> None:
