@@ -1,10 +1,62 @@
 # Cars API
 
+## Usage:
+
+For testing, the deployed version of app is available here on Heroku: https://ng-cars.herokuapp.com/
+Example endpoint: https://ng-cars.herokuapp.com/cars/
+
+
+### Endpoints:
+
+create new car:
+<br>
+```
+POST /cars: 
+
+form-data:
+
+{
+  "make" : "Volkswagen",
+  "model" : "Golf",
+}
+```
+
+delete car:
+<br>
+
+`DELETE /cars/{id}`
+
+rate car:
+<br>
+
+```
+POST /rate
+
+form-data:
+{
+  "car_id" : 1,
+  "rating" : 5,
+}
+```
+
+get all created cars:
+<br>
+`GET /cars`
+
+get top popular cars present in the DB (based on number of rates):
+<br>
+`GET /popular`
+
+### Postman:
+The postman collection can be fetched from the link:
+https://www.getpostman.com/collections/bf016d91c7f468bc69ea
+
+(Postman: Import -> Import from link)
+
 ## Getting started:
 
 clone project:
-`git clone https://github.com/tkozuch/CarsApp.git`
-
+`git clone https://github.com/tkozuch/CarsApp.git` 
 go to project folder:
 
 `cd ./CarsApp`
