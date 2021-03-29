@@ -3,11 +3,11 @@
 ## Getting started:
 
 clone project:
-`git clone https://github.com/tkozuch/NetGuruCars.git`
+`git clone https://github.com/tkozuch/CarsApp.git`
 
 go to project folder:
 
-`cd ./NetGuruCars`
+`cd ./CarsApp`
 
 ## a) Getting started with Docker:
 
@@ -89,6 +89,6 @@ This should return empty brackets in your top left corner directory: `[]`
 
 ### To run tests:
 
-From `NetGuruCars/cars_site` directory run: 
+From the outer `cars_site` directory run: 
 
 <br> `python manage.py test`
