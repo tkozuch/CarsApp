@@ -8,7 +8,7 @@ Example endpoint: https://ng-cars.herokuapp.com/cars/
 
 ### Endpoints:
 
-create new car:
+create new car: (the correctness of parameters will be checked with an external API - https://vpic.nhtsa.dot.gov/api/)
 <br>
 ```
 POST /cars: 
@@ -41,17 +41,82 @@ form-data:
 
 get all created cars:
 <br>
-`GET /cars`
+```
+GET /cars
+```
+```
+Example response:
+[
+
+    {
+    
+      "id" : 1,
+    
+      "make" : "Volkswagen",
+    
+      "model" : "Golf",
+    
+      "avg_rating" : 5.0,
+    
+    },
+    
+    {
+    
+      "id" : 2,
+    
+      "make" : "Volkswagen",
+    
+      "model" : "Passat",
+    
+      "avg_rating" : 4.7,
+    
+    }
+
+]
+```
+
 
 get top popular cars present in the DB (based on number of rates):
 <br>
-`GET /popular`
+```
+GET /popular
+```
+```
+Example response:
+[
+
+    {
+    
+      "id" : 1,
+
+      "make" : "Volkswagen",
+    
+      "model" : "Golf",
+    
+      "rates_number" : 100,
+    
+    },
+    
+    {
+    
+      "id" : 2,
+    
+      "make" : "Volkswagen",
+    
+      "model" : "Passat",
+    
+      "rates_number" : 31,
+    
+    }
+
+]
+```
 
 ### Postman:
 The postman collection can be fetched from the link:
 https://www.getpostman.com/collections/bf016d91c7f468bc69ea
 
-(Postman: Import -> Import from link)
+(To import in Postman click: Import -> Import from link, and paste the above link.)
 
 ## Getting started:
 
@@ -63,11 +128,11 @@ go to project folder:
 
 ## a) Getting started with Docker:
 
-`cp .env.sample .env`
-
-`docker-compose build`
-
-`docker-compose up`
+```
+cp .env.sample .env
+docker-compose build
+docker-compose up
+```
 
 (CTR+C to stop and exit)
 
@@ -77,7 +142,7 @@ In browser type:
 
 http://127.0.0.1:8000/cars
 
-This should return empty brackets in your top left corner directory: `[]`
+This should return empty brackets in top left corner of the browser window: `[]`
 
 
 ### To run tests:
