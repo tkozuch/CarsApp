@@ -1,10 +1,15 @@
 # Cars API
 
+Api encapsulating operations for Car models ratings.
+
+### Technologies used 
+
+Python, Django, Unittest, Docker, Heroku
+
 ## Usage:
 
 For testing, the deployed version of app is available here on Heroku: https://ng-cars.herokuapp.com/
 Example endpoint: https://ng-cars.herokuapp.com/cars/
-
 
 ### Endpoints:
 
